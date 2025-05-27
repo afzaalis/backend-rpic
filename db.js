@@ -1,14 +1,12 @@
-const mysql = require('mysql2');  
-
+const mysql = require('mysql2');
 
 const db = mysql.createPool({
-  host: 'localhost',
+  host: 'shinkansen.proxy.rlwy.net',
   user: 'root',
-  password: '',
-  database: 'rpic',
-  port: 3306,
+  password: 'JNkffZDguCtpxRHQYenkKzZfczxfmDKI',
+  database: 'railway',
+  port: 55011,
 });
 
-
-const promiseDb = db.promise();  
-module.exports = promiseDb; 
+const promiseDb = db.promise();
+module.exports = promiseDb;

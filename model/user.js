@@ -1,22 +1,4 @@
-const mysql = require('mysql');
-
-// Konfigurasi database
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  port: 3306,
-  password: '',
-  database: 'rpic',
-});
-
-// Koneksi ke database
-db.connect(err => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-  } else {
-    console.log('Connected to MySQL');
-  }
-});
+const db = require('../db'); 
 
 // Get user by email
 const getUserByEmail = (email, callback) => {
@@ -56,15 +38,11 @@ const getUserById = (id, callback) => {
 const updateUserById = (userId, userData, callback) => {
   const { name, email, phone } = userData;
   const query = 'UPDATE user SET name = ?, email = ?, phone = ? WHERE id = ?';
-  
   db.query(query, [name, email, phone, userId], (err, result) => {
-    if (err) {
-      return callback(err, null);
-    }
+    if (err) return callback(err, null);
     callback(null, { id: userId, name, email, phone });
   });
 };
-
 
 // Add new user
 const addUser = (user, callback) => {
@@ -81,7 +59,7 @@ const addUser = (user, callback) => {
 
 // Get all users
 const getAllUsers = (callback) => {
-  const query = 'SELECT id, name, email, role FROM user'; 
+  const query = 'SELECT id, name, email, role FROM user';
   db.query(query, (err, results) => {
     if (err) {
       console.error('Database query error:', err);
@@ -91,5 +69,10 @@ const getAllUsers = (callback) => {
   });
 };
 
-
-module.exports = { getUserByEmail, addUser, getUserById, updateUserById,getAllUsers };
+module.exports = {
+  getUserByEmail,
+  addUser,
+  getUserById,
+  updateUserById,
+  getAllUsers
+};
