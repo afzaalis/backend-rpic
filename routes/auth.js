@@ -86,14 +86,12 @@ router.put('/updateProfile', authenticateToken, (req, res) => {
       console.error("Database error:", err); // Log database error
       return res.status(500).json({ error: 'Database error: ' + err.message });
     }
-
     if (!user) {
-      console.log("User not found:", userId); 
+      console.log("User not found:", userId); // Log if user not found
       return res.status(404).json({ message: 'User not found' });
     }
 
     updateUserById(userId, { name, email, phone }, (err, updatedUser) => {
-      
       if (err) {
         console.error("Update error:", err); // Log update error
         return res.status(500).json({ error: 'Failed to update profile: ' + err.message });
