@@ -8,12 +8,15 @@ router.get('/:type', async (req, res) => {
   try {
     const [rows] = await db.query(
       `SELECT pcs.id, pcs.pc_number, pc_types.name AS type,
-       CASE WHEN bookings.id IS NULL THEN 1 ELSE 0 END AS available
-       FROM pcs
-       LEFT JOIN bookings ON pcs.id = bookings.pc_id AND bookings.status IN ('pending', 'confirmed')
-       JOIN pc_types ON pcs.pc_type_id = pc_types.id
-       WHERE pc_types.name = ?
-       GROUP BY pcs.id`,
+       NOT EXISTS (
+         SELECT 1 FROM bookings
+         WHERE bookings.pc_id = pcs.id
+           AND bookings.status IN ('pending', 'confirmed')
+             ) AS available
+        FROM pcs
+        JOIN pc_types ON pcs.pc_type_id = pc_types.id
+        WHERE pc_types.name = ?
+        `,
        [pcTypeName]
     );
     res.json(rows);
