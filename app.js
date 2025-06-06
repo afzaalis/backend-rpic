@@ -1,13 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/booking');
-const userRoutes = require('./routes/user');  
-
+const pcsRoutes = require('./routes/pcs');
 const db = require('./db');  
 
-const app = express();
+const app = express();  
 
 db.query('SELECT 1')
   .then(() => {
@@ -26,8 +26,10 @@ app.use((req, res, next) => {
 
 // Routing
 app.use('/api/auth', authRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/pcs', pcsRoutes);
+app.use('/api/booking', bookingRoutes);
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 app.listen(3000, () => {
   console.log('Server running on port 3000');

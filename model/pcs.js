@@ -1,37 +1,30 @@
 const db = require('../db');
 
-// Fungsi untuk mengambil semua PC
-exports.getAllPCs = async () => {
-  const query = 'SELECT * FROM pcs';
-  try {
-    const [results] = await db.query(query);
-    return results;
-  } catch (err) {
-    console.error('Error fetching PCs:', err);
-    throw new Error('Failed to fetch PCs');
-  }
+// Ambil semua PC dengan tipe tertentu
+const getPCsByType = async (typeName) => {
+  const [rows] = await db.query(
+    `SELECT pcs.id, pcs.pc_number, pcs.pc_type_id, pc_types.name AS type
+     FROM pcs
+     JOIN pc_types ON pcs.pc_type_id = pc_types.id
+     WHERE pc_types.name = ?`,
+    [typeName]
+  );
+  return rows;
 };
 
-// Fungsi untuk memperbarui status PC
-exports.updatePCStatus = async (id, status) => {
-  const query = 'UPDATE pcs SET status = ? WHERE id = ?';
-  try {
-    const [results] = await db.query(query, [status, id]);
-    return results;
-  } catch (err) {
-    console.error('Error updating PC status:', err);
-    throw new Error('Failed to update PC status');
-  }
+// Ambil semua PC yang sedang dibooking (status pending/confirmed)
+const getBookedPCs = async () => {
+  const [rows] = await db.query(
+    `SELECT pcs.pc_number
+     FROM bookings
+     JOIN pcs ON bookings.pc_id = pcs.id
+     WHERE bookings.status IN ('pending', 'confirmed')
+       AND NOW() BETWEEN bookings.start_time AND bookings.end_time`
+  );
+  return rows.map(row => row.pc_number);
 };
 
-// Fungsi untuk menghapus PC berdasarkan ID
-exports.deletePCById = async (id) => {
-  const query = 'DELETE FROM pcs WHERE id = ?';
-  try {
-    const [result] = await db.query(query, [id]);
-    return result;
-  } catch (err) {
-    console.error('Error deleting PC:', err);
-    throw new Error('Failed to delete PC');
-  }
+module.exports = {
+  getPCsByType,
+  getBookedPCs
 };

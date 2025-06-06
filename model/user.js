@@ -1,78 +1,50 @@
 const db = require('../db'); 
 
 // Get user by email
-const getUserByEmail = (email, callback) => {
-  const query = 'SELECT id, name, email, password, role FROM user WHERE email = ?';
-  db.query(query, [email], (err, results) => {
-    if (err) {
-      console.error('Database query error:', err);
-      return callback(err);
-    }
-    if (results.length === 0) {
-      console.log(`User with email ${email} not found`);
-      return callback(null, null);
-    }
-    console.log(`User found: ${JSON.stringify(results[0])}`);
+const getUserByEmail = async (email, callback) => {
+  try {
+    const [results] = await db.query('SELECT id, name, email, password, role FROM users WHERE email = ?', [email]);
+    if (results.length === 0) return callback(null, null);
     callback(null, results[0]);
-  });
+  } catch (err) {
+    console.error('Database query error:', err);
+    callback(err);
+  }
 };
 
 // Get user by ID
-const getUserById = (id, callback) => {
-  const query = 'SELECT id, name, email, phone FROM user WHERE id = ?';
-  db.query(query, [id], (err, results) => {
-    if (err) {
-      console.error('Database query error:', err);
-      return callback(err);
-    }
-    if (results.length === 0) {
-      console.log(`User with ID ${id} not found`);
-      return callback(null, null);
-    }
-    console.log(`User found by ID: ${JSON.stringify(results[0])}`);
+const getUserById = async (id, callback) => {
+  try {
+    const [results] = await db.query('SELECT id, name, email, phone FROM users WHERE id = ?', [id]);
+    if (results.length === 0) return callback(null, null);
     callback(null, results[0]);
-  });
+  } catch (err) {
+    console.error('Database query error:', err);
+    callback(err);
+  }
 };
 
 // Update user by ID
-const updateUserById = (userId, userData, callback) => {
+const updateUserById = async (userId, userData, callback) => {
   const { name, email, phone } = userData;
-  const query = 'UPDATE user SET name = ?, email = ?, phone = ? WHERE id = ?';
-  db.query(query, [name, email, phone, userId], (err, result) => {
-    if (err) return callback(err, null);
+  try {
+    await db.query('UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?', [name, email, phone, userId]);
     callback(null, { id: userId, name, email, phone });
-  });
+  } catch (err) {
+    callback(err);
+  }
 };
 
 // Add new user
-const addUser = (user, callback) => {
+const addUser = async (user, callback) => {
   const { name, email, password, role } = user;
-  const query = 'INSERT INTO user (name, email, password, role) VALUES (?, ?, ?, ?)';
-  db.query(query, [name, email, password, role], (err, results) => {
-    if (err) {
-      console.error('Error inserting user into database:', err);
-      return callback(err);
-    }
+  try {
+    const [results] = await db.query('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', [name, email, password, role]);
     callback(null, results);
-  });
+  } catch (err) {
+    console.error('Error inserting user into database:', err);
+    callback(err);
+  }
 };
 
-// Get all users
-const getAllUsers = (callback) => {
-  const query = 'SELECT id, name, email, role FROM user';
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error('Database query error:', err);
-      return callback(err);
-    }
-    callback(null, results);
-  });
-};
-
-module.exports = {
-  getUserByEmail,
-  addUser,
-  getUserById,
-  updateUserById,
-  getAllUsers
-};
+module.exports = { getUserByEmail, addUser, getUserById, updateUserById };
