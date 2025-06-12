@@ -13,16 +13,22 @@ const Booking = {
     return result.insertId;
   },
 
-  getAllBookings: async () => {
-    const [rows] = await db.query(`
-      SELECT b.*, u.name AS user_name, p.pc_number, p.type AS pc_type
-      FROM bookings b
-      JOIN users u ON b.user_id = u.id
-      JOIN pcs p ON b.pc_id = p.id
-      ORDER BY b.created_at DESC
-    `);
-    return rows;
-  },
+getAllBookings: async () => {
+  const [rows] = await db.query(`
+    SELECT 
+      b.id, b.user_id, b.pc_id, b.start_time, b.end_time, 
+      b.total_price, b.status, b.created_at, b.updated_at, b.type,
+      u.name AS user_name, 
+      p.pc_number, 
+      pt.name AS pc_type
+    FROM bookings b
+    JOIN users u ON b.user_id = u.id
+    JOIN pcs p ON b.pc_id = p.id
+    JOIN pc_types pt ON p.pc_type_id = pt.id
+    ORDER BY b.created_at DESC
+  `);
+  return rows;
+}
 
 getBookingsByUserId: async (userId) => {
   try {
