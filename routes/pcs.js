@@ -26,6 +26,23 @@ router.get('/:type', async (req, res) => {
   }
 });
 
+router.get("/pcs/:type", async (req, res) => {
+  const type = req.params.type;
+  try {
+    const [rows] = await db.execute(
+      `SELECT pcs.id, pcs.pc_number, pt.name AS type, pcs.available, pcs.price
+       FROM pcs
+       JOIN pc_types pt ON pcs.pc_type_id = pt.id
+       WHERE pt.name = ?`,
+      [type]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Error get PCs:", err);
+    res.status(500).json({ message: "Gagal mengambil data PC" });
+  }
+});
+
 
 // GET ketersediaan PC berdasarkan jenis dengan cek booking aktif
 router.get('/availability/:type', async (req, res) => {
