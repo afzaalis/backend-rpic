@@ -114,31 +114,34 @@ router.get('/active', async (req, res) => {
 
 // booking manual -admin
 router.post('/booking/admin', async (req, res) => {
-  const { userId, selectedPCs, totalPrice } = req.body;
+  const { userId, selectedPCs } = req.body;
 
   try {
     const bookingIds = [];
 
     for (const pc of selectedPCs) {
-      const booking = await Booking.create({
-        userId,
-        pc_id: pc.pc_id,
-        hours: pc.hours,
-        price: pc.price,
-        startTime: pc.startTime,
-        paymentStatus: "Confirmed",
-        paymentMethod: "Manual",
-      });
+      const startTime = new Date(pc.startTime);
+      const endTime = new Date(startTime.getTime() + pc.hours * 60 * 60 * 1000);
 
-      bookingIds.push(booking.id);
+      const bookingId = await Booking.createBooking(
+        userId,
+        pc.pc_id,
+        startTime,
+        endTime,
+        pc.price,   
+        'Manual'    
+      );
+
+      bookingIds.push(bookingId);
     }
 
     return res.status(201).json({ message: "Booking berhasil", bookingIds });
   } catch (error) {
-    console.error(error);
+    console.error("Booking admin error:", error);
     res.status(500).json({ message: "Gagal melakukan booking manual." });
   }
 });
+
 
 
 module.exports = router;
