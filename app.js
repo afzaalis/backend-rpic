@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/pcs', pcsRoutes);
 app.use('/api/booking', bookingRoutes);
-app.use('/api/auth', userRoutes);
+app.use('/api/user', userRoutes);
 
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
