@@ -69,6 +69,31 @@ router.get('/availability/:type', async (req, res) => {
 });
 
 
+// PATCH /pcs/:id - Ubah status ketersediaan PC
+router.patch('/:id', async (req, res) => {
+  const pcId = req.params.id;
+  const { available } = req.body;
+
+  if (typeof available !== "boolean") {
+    return res.status(400).json({ message: "Field 'available' harus boolean" });
+  }
+
+  try {
+    const [result] = await db.query(
+      "UPDATE pcs SET available = ? WHERE id = ?",
+      [available, pcId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "PC tidak ditemukan" });
+    }
+
+    res.json({ message: "Status PC berhasil diperbarui" });
+  } catch (error) {
+    console.error("Gagal update status PC:", error);
+    res.status(500).json({ message: "Gagal memperbarui status PC" });
+  }
+});
 
 
 
