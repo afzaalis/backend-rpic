@@ -122,16 +122,19 @@ router.post('/admin', async (req, res) => {
     for (const pc of selectedPCs) {
       const startTime = new Date(pc.startTime);
       const endTime = new Date(startTime.getTime() + pc.hours * 60 * 60 * 1000);
+      const totalPrice = pc.price * pc.hours;
 
-    const bookingId = await Booking.createBooking(
+      const bookingId = await Booking.createBooking(
         userId,
         pc.pc_id,
         startTime,
         endTime,
-        pc.price * pc.hours,  // <- ini perhitungan total yang benar
+        totalPrice,
         'Manual'
       );
 
+      // Tandai PC tidak tersedia
+      await db.execute("UPDATE pcs SET available = 0 WHERE id = ?", [pc.pc_id]);
 
       bookingIds.push(bookingId);
     }
@@ -142,6 +145,7 @@ router.post('/admin', async (req, res) => {
     res.status(500).json({ message: "Gagal melakukan booking manual." });
   }
 });
+
 
 
 
