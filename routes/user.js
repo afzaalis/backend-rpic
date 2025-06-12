@@ -26,7 +26,7 @@ router.get('/users/:id', (req, res) => {
 
 router.put("/updateProfile", authenticateToken, async (req, res) => {
   const userId = req.user.id;
-  const { name, email, phone } = req.body;
+  const { name, email } = req.body; // hapus phone
 
   if (!name || !email) {
     return res.status(400).json({ error: "Name and email are required" });
@@ -34,7 +34,7 @@ router.put("/updateProfile", authenticateToken, async (req, res) => {
 
   try {
     const updatedUser = await new Promise((resolve, reject) => {
-      updateUserById(userId, { name, email, phone }, (err, result) => {
+      updateUserById(userId, { name, email }, (err, result) => {
         if (err) return reject(err);
         resolve(result);
       });
