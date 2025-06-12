@@ -123,14 +123,15 @@ router.post('/admin', async (req, res) => {
       const startTime = new Date(pc.startTime);
       const endTime = new Date(startTime.getTime() + pc.hours * 60 * 60 * 1000);
 
-      const bookingId = await Booking.createBooking(
+    const bookingId = await Booking.createBooking(
         userId,
         pc.pc_id,
         startTime,
         endTime,
-        pc.price,   
-        'Manual'    
+        pc.price * pc.hours,  // <- ini perhitungan total yang benar
+        'Manual'
       );
+
 
       bookingIds.push(bookingId);
     }
