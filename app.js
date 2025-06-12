@@ -5,9 +5,9 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/booking');
 const pcsRoutes = require('./routes/pcs');
-const db = require('./db');  
 const userRoutes = require('./routes/user');
 
+const db = require('./db');  
 
 const app = express();  
 
@@ -28,10 +28,9 @@ app.use((req, res, next) => {
 
 // Routing
 app.use('/api/auth', authRoutes);
-app.use('/api/bookings', bookingRoutes);
 app.use('/api/pcs', pcsRoutes);
-app.use('/api/users', userRoutes);
-
+app.use('/api/booking', bookingRoutes);
+app.use('/api/auth', userRoutes);
 
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
