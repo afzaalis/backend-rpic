@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const userModel = require('../model/user');
-const authenticateToken = require('../middleware/auth');
 
 router.get('/users', (req, res) => {
   userModel.getAllUsers((err, users) => {
@@ -25,21 +24,28 @@ router.get('/users/:id', (req, res) => {
   });
 });
 
-router.put("/updateProfile", authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-  const { name, email } = req.body; // hapus phone
+router.put("/updateProfile", async (req, res) => {
+  const { id, name, email } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).json({ error: "Name and email are required" });
+  if (!id || !name || !email) {
+    return res.status(400).json({ error: "ID, name, and email are required" });
   }
 
   try {
     const updatedUser = await new Promise((resolve, reject) => {
-      updateUserById(userId, { name, email }, (err, result) => {
+      updateUserById(id, { name, email }, (err, result) => {
         if (err) return reject(err);
         resolve(result);
       });
     });
+
+    res.json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+});
+
 
     res.json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
