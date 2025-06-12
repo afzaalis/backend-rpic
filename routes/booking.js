@@ -113,7 +113,7 @@ router.get('/active', async (req, res) => {
 });
 
 // booking manual -admin
-router.post('/booking/admin', async (req, res) => {
+router.post('/admin', async (req, res) => {
   const { userId, selectedPCs } = req.body;
 
   try {
