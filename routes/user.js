@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userModel = require('../model/user');
 
+// Get all users
 router.get('/users', (req, res) => {
   userModel.getAllUsers((err, users) => {
     if (err) {
@@ -11,6 +12,7 @@ router.get('/users', (req, res) => {
   });
 });
 
+// Get user by ID
 router.get('/users/:id', (req, res) => {
   const userId = req.params.id;
   userModel.getUserById(userId, (err, user) => {
@@ -24,35 +26,27 @@ router.get('/users/:id', (req, res) => {
   });
 });
 
-router.put("/updateProfile", async (req, res) => {
+// Update profile
+router.put('/updateProfile', async (req, res) => {
   const { id, name, email } = req.body;
 
   if (!id || !name || !email) {
-    return res.status(400).json({ error: "ID, name, and email are required" });
+    return res.status(400).json({ error: 'ID, name, and email are required' });
   }
 
   try {
     const updatedUser = await new Promise((resolve, reject) => {
-      updateUserById(id, { name, email }, (err, result) => {
+      userModel.updateUserById(id, { name, email }, (err, result) => {
         if (err) return reject(err);
         resolve(result);
       });
     });
 
-    res.json({ message: "Profile updated successfully", user: updatedUser });
+    res.json({ message: 'Profile updated successfully', user: updatedUser });
   } catch (error) {
-    console.error("Update profile error:", error);
-    res.status(500).json({ error: "Failed to update profile" });
-  }
-});
-
-
-    res.json({ message: "Profile updated successfully", user: updatedUser });
-  } catch (error) {
-    console.error("Update profile error:", error);
-    res.status(500).json({ error: "Failed to update profile" });
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 
 module.exports = router;
-
