@@ -26,14 +26,18 @@ const getUserById = async (id, callback) => {
 
 // Update user by ID
 const updateUserById = async (userId, userData, callback) => {
-  const { name, email, phone } = userData;
+  const { name, email } = userData; // tanpa phone
   try {
-    await db.query('UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?', [name, email, phone, userId]);
-    callback(null, { id: userId, name, email, phone });
+    await db.query(
+      'UPDATE users SET name = ?, email = ? WHERE id = ?',
+      [name, email, userId]
+    );
+    callback(null, { id: userId, name, email });
   } catch (err) {
     callback(err);
   }
 };
+
 
 // Add new user
 const addUser = async (user, callback) => {
